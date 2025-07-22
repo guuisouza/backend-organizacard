@@ -5,6 +5,7 @@ export const validationEnvSchema = Joi.object({
     .valid('development', 'production', 'test', 'provision')
     .default('development'),
   APP_PORT: Joi.number().default(3003).required(),
+  POSTGRES_HOST: Joi.string().required(),
   POSTGRES_PORT: Joi.number().required(),
   POSTGRES_USER: Joi.string().required(),
   POSTGRES_PASSWORD: Joi.string().required(),
