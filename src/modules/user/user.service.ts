@@ -8,11 +8,13 @@ import { AuthProvider, User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    private readonly emailService: EmailService,
   ) {}
 
   async createLocalUser({
@@ -20,7 +22,6 @@ export class UserService {
     email,
     password,
   }: CreateUserDto): Promise<{ id: string }> {
-    // Checar se o email já existe
     const userExists = await this.usersRepository.findOneBy({
       email,
     });
@@ -43,6 +44,11 @@ export class UserService {
     });
 
     const createdUser = await this.usersRepository.save(user);
+
+    // Maybe add a queue service here for sending emails in the future
+    void this.emailService.sendEmail(email, activationToken).catch((err) => {
+      console.log('Failed to send email', err);
+    });
 
     return {
       id: createdUser.id,

@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   UsePipes,
 } from '@nestjs/common';
 import { CreateUserDto, createUserSchema } from './dto/create-user.dto';
@@ -22,8 +23,8 @@ export class UserController {
   }
 
   @HttpCode(204)
-  @Get('activate/:token')
-  async activateUser(@Param('token') token: string) {
+  @Get('activate')
+  async activateUser(@Query('token') token: string) {
     return this.userService.activateLocalUser(token);
   }
 }
