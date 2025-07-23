@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      - TZ=America/Sao_Paulo
+    command: ["postgres", "-c", "timezone=America/Sao_Paulo"]
     volumes:
       - organizacard-data:/var/lib/postgresql/data
     networks:
