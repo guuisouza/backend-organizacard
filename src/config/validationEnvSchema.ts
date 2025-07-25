@@ -14,4 +14,6 @@ export const validationEnvSchema = Joi.object({
   ETHEREAL_PORT: Joi.number().required(),
   ETHEREAL_USER: Joi.string().required(),
   ETHEREAL_PASSWORD: Joi.string().required(),
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().required(),
 });
