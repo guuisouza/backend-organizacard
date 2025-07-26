@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { loginLocalSchema } from '../dto/login-local.dto';
-import { SafeUser } from '../custom-types/safe-user';
+import { SafeUser } from '../../../shared/types/safe-user';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid fields or values');
     }
 
-    const validUser = await this.authService.validateUser(parsed.data);
+    const validUser = await this.authService.validateLocalUser(parsed.data);
 
     if (!validUser) {
       throw new UnauthorizedException('Invalid username or password');
@@ -30,7 +30,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       );
     }
 
-    const { password: _, ...user } = validUser;
-    return user;
+    const { password: _, ...safeUser } = validUser;
+    return safeUser;
   }
 }

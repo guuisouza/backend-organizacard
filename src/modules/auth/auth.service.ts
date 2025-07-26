@@ -1,20 +1,55 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { LoginLocalDto } from './dto/login-local.dto';
 import { JwtService } from '@nestjs/jwt';
-import { SafeUser } from './custom-types/safe-user';
+import { SafeUser } from '../../shared/types/safe-user';
+import { GoogleProfile } from '../../shared/types/google-profile';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
-  async loginLocal(user: SafeUser): Promise<{ access_token: string }> {
+  async validateLocalUser({
+    email,
+    password,
+  }: LoginLocalDto): Promise<User | null> {
+    const user = await this.userService.findUserByEmailWithPassword(email);
+    if (!user || !user.password) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    return isPasswordValid ? user : null;
+  }
+
+  async validateGoogleUser({
+    id,
+    displayName,
+    email,
+    avatar,
+  }: GoogleProfile): Promise<User> {
+    const user = await this.userService.findUserByGoogleId(id);
+
+    if (!user) {
+      const newUser = await this.userService.createGoogleUser({
+        id,
+        displayName,
+        email,
+        avatar,
+      });
+
+      return newUser;
+    }
+
+    return user;
+  }
+
+  async issueJwtForUser(user: SafeUser): Promise<{ access_token: string }> {
     const jwtPayload = {
       sub: user.id,
       email: user.email,
@@ -24,21 +59,5 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(jwtPayload),
     };
-  }
-
-  async validateUser({ email, password }: LoginLocalDto): Promise<User | null> {
-    // we have to add a select password because in user entity it is hidden on select queries by default
-    const user = await this.usersRepository
-      .createQueryBuilder('users')
-      .addSelect('users.password')
-      .where('users.email = :email', { email })
-      .getOne();
-
-    if (!user || !user.password) {
-      return null;
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    return isPasswordValid ? user : null;
   }
 }
