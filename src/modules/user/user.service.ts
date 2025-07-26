@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { EmailService } from '../email/email.service';
+import { GoogleProfile } from '../../shared/types/google-profile';
 
 @Injectable()
 export class UserService {
@@ -68,5 +69,38 @@ export class UserService {
     user.activation_token = null;
 
     await this.usersRepository.save(user);
+  }
+
+  async findUserByEmailWithPassword(email: string): Promise<User | null> {
+    // we have to add a select password because in user entity it is hidden on select queries by default
+    return this.usersRepository
+      .createQueryBuilder('users')
+      .addSelect('users.password')
+      .where('users.email = :email', { email })
+      .getOne();
+  }
+
+  async findUserByGoogleId(googleId: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ google_id: googleId });
+  }
+
+  async createGoogleUser({
+    id,
+    displayName,
+    email,
+    avatar,
+  }: GoogleProfile): Promise<User> {
+    const newUser = this.usersRepository.create({
+      name: displayName,
+      email,
+      auth_provider: AuthProvider.GOOGLE,
+      google_id: id,
+      avatar_url: avatar,
+      is_active: true,
+    });
+
+    await this.usersRepository.save(newUser);
+
+    return newUser;
   }
 }
