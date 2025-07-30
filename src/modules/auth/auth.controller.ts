@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SafeUser } from '../../shared/types/safe-user';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,5 +25,11 @@ export class AuthController {
   async googleRedirect(@Req() req: { user: SafeUser }) {
     const user = req.user;
     return this.authService.issueJwtForUser(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Req() req: { user: SafeUser }) {
+    return req.user;
   }
 }
