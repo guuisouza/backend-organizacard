@@ -103,4 +103,8 @@ export class UserService {
 
     return newUser;
   }
+
+  async findUserById(id: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ id });
+  }
 }
