@@ -49,7 +49,7 @@ export class AuthService {
     return user;
   }
 
-  async issueJwtForUser(user: SafeUser): Promise<{ access_token: string }> {
+  issueJwtForUser(user: SafeUser): { access_token: string } {
     const jwtPayload = {
       sub: user.id,
       email: user.email,
