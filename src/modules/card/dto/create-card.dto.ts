@@ -7,7 +7,6 @@ export const createCardSchema = z
     brand: z.string().trim().min(1).max(25),
     card_type: z.nativeEnum(CardType),
     credit_limit_in_cents: z.number().int().positive().nullable().optional(),
-    available_limit_in_cents: z.number().int().positive().nullable().optional(),
     invoice_closing_day: z.number().int().min(1).max(31).nullable().optional(),
     invoice_due_day: z.number().int().min(1).max(31).nullable().optional(),
   })
