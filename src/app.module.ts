@@ -4,6 +4,7 @@ import { validationEnvSchema } from './config/validationEnvSchema';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
+import { CardModule } from './modules/card/card.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     AuthModule,
     UserModule,
+    CardModule,
   ],
   controllers: [],
   providers: [],
