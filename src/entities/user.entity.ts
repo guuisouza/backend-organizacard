@@ -2,14 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export enum AuthProvider {
-  LOCAL = 'local',
-  GOOGLE = 'google',
-  APPLE = 'apple',
-}
+import { Card } from './card.entity';
+import { AuthProvider } from '../shared/enums/auth-provider.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -44,6 +41,9 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   google_id: string | null;
+
+  @OneToMany(() => Card, (card) => card.user)
+  cards: Card[];
 
   @CreateDateColumn()
   created_at: Date;
