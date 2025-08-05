@@ -1,10 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from '../../entities/card.entity';
 import { Repository } from 'typeorm';
 import { CreateCardDto } from './dto/create-card.dto';
-import { ICreateCardResponse } from 'src/shared/interfaces/card.interface';
+import {
+  ICreateCardResponse,
+  IGetCardResponse,
+  IGetCreditCardResponse,
+  IGetDebitCardResponse,
+} from '../../shared/interfaces/card.interface';
 import { CardType } from '../../shared/enums/card-type.enum';
+import { PatchCardDto } from './dto/update-card.dto';
 
 @Injectable()
 export class CardService {
@@ -53,5 +63,75 @@ export class CardService {
       invoice_closing_day: createdCard.invoice_closing_day!,
       invoice_due_day: createdCard.invoice_due_day!,
     };
+  }
+
+  async getCards(userId: string): Promise<IGetCardResponse[] | null> {
+    const cards = await this.cardsRepository.findBy({ user: { id: userId } });
+
+    if (!cards) {
+      return [];
+    }
+
+    console.log(cards);
+
+    const formattedCards = cards.map((card) => {
+      if (card.card_type === CardType.DEBIT) {
+        return {
+          id: card.id,
+          name: card.name,
+          brand: card.brand,
+          card_type: CardType.DEBIT,
+        } as IGetDebitCardResponse;
+      }
+      return {
+        id: card.id,
+        name: card.name,
+        brand: card.brand,
+        card_type: CardType.CREDIT,
+        credit_limit_in_cents: card.credit_limit_in_cents,
+        invoice_closing_day: card.invoice_closing_day,
+        invoice_due_day: card.invoice_due_day,
+      } as IGetCreditCardResponse;
+    });
+
+    return formattedCards;
+  }
+
+  async patchCardById(id: string, userId: string, data: PatchCardDto) {
+    const existingCard = await this.cardsRepository.findOneBy({
+      id,
+      user: { id: userId },
+    });
+
+    if (!existingCard) {
+      throw new NotFoundException('Card not found');
+    }
+
+    if ('card_type' in data) {
+      throw new BadRequestException('You cannot change the card type');
+    }
+
+    const sanitizedData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined),
+    );
+
+    if (Object.keys(sanitizedData).length === 0) {
+      throw new BadRequestException('No valid fields provided for update.');
+    }
+
+    if (existingCard.card_type === CardType.DEBIT) {
+      const {
+        credit_limit_in_cents,
+        invoice_closing_day,
+        invoice_due_day,
+        ...validDebitData
+      } = data;
+
+      await this.cardsRepository.update({ id }, validDebitData);
+      return;
+    }
+
+    await this.cardsRepository.update({ id }, sanitizedData);
+    return;
   }
 }
