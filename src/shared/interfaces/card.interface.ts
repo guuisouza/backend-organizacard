@@ -1,5 +1,6 @@
 import { CardType } from '../enums/card-type.enum';
 
+// Post/Create Card Response Interfaces
 interface IBaseCardResponse {
   id: string;
   name: string;
@@ -22,6 +23,7 @@ export interface ICreditCardResponse extends IBaseCardResponse {
 
 export type ICreateCardResponse = IDebitCardResponse | ICreditCardResponse;
 
+// Get Card Response Interfaces
 export interface IGetBaseCardResponse {
   id: string;
   name: string;
