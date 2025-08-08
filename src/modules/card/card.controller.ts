@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -43,5 +44,12 @@ export class CardController {
     @Body(new ZodValidationPipe(patchCardSchema)) patchCardto: PatchCardDto,
   ) {
     return this.cardService.patchCardById(id, userId, patchCardto);
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  async deleteCard(@Param('id') id: string, @CurrentUserId() userId: string) {
+    return this.cardService.deleteCardById(id, userId);
   }
 }

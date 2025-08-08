@@ -97,7 +97,11 @@ export class CardService {
     return formattedCards;
   }
 
-  async patchCardById(id: string, userId: string, data: PatchCardDto) {
+  async patchCardById(
+    id: string,
+    userId: string,
+    data: PatchCardDto,
+  ): Promise<void> {
     const existingCard = await this.cardsRepository.findOneBy({
       id,
       user: { id: userId },
@@ -133,5 +137,18 @@ export class CardService {
 
     await this.cardsRepository.update({ id }, sanitizedData);
     return;
+  }
+
+  async deleteCardById(id: string, userId: string): Promise<void> {
+    const existingCard = await this.cardsRepository.findOneBy({
+      id,
+      user: { id: userId },
+    });
+
+    if (!existingCard) {
+      throw new NotFoundException('Card not found');
+    }
+
+    await this.cardsRepository.delete({ id });
   }
 }
