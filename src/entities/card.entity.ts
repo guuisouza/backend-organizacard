@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { CardType } from '../shared/enums/card-type.enum';
+import { Transaction } from './transaction.entity';
 
 @Entity({ name: 'cards' })
 export class Card {
@@ -39,6 +41,9 @@ export class Card {
 
   @Column({ type: 'integer', nullable: true })
   invoice_due_day: number | null;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.card)
+  transactions: Transaction[];
 
   @CreateDateColumn()
   created_at: Date;
