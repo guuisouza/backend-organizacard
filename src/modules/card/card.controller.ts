@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { CreateCardDto, createCardSchema } from './dto/create-card.dto';
 import { CurrentUserId } from '../../decorators/current-userId.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
