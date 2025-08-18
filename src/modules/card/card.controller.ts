@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -39,7 +40,7 @@ export class CardController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async updateCard(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @CurrentUserId() userId: string,
     @Body(new ZodValidationPipe(patchCardSchema)) patchCardto: PatchCardDto,
   ) {
@@ -49,7 +50,10 @@ export class CardController {
   @Delete('delete/:id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  async deleteCard(@Param('id') id: string, @CurrentUserId() userId: string) {
+  async deleteCard(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @CurrentUserId() userId: string,
+  ) {
     return this.cardService.deleteCardById(id, userId);
   }
 }
