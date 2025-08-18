@@ -19,7 +19,7 @@ export class Transaction {
   card: Card;
 
   @Column({ type: 'enum', enum: TransactionCategoryType, nullable: false })
-  transaction_category: TransactionCategoryType;
+  category: TransactionCategoryType;
 
   @Column({ type: 'varchar', length: 150, nullable: false })
   description: string;
