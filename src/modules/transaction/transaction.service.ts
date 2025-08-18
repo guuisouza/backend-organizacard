@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../../entities/transaction.entity';
 import { Between, Repository } from 'typeorm';
@@ -189,5 +193,49 @@ export class TransactionService {
       transactions,
       total_card_balance: totalCardBalance,
     };
+  }
+
+  async getTransactionById(
+    cardId: string,
+    transactionId: string,
+  ): Promise<Transaction> {
+    const transaction = await this.transactionsRepository.findOneBy({
+      card: { id: cardId },
+      id: transactionId,
+    });
+    if (!transaction) {
+      throw new NotFoundException('Transaction id not found');
+    }
+    return transaction;
+  }
+
+  async deleteTransactionById(
+    cardId: string,
+    transactionId: string,
+  ): Promise<void> {
+    const transaction = await this.transactionsRepository.findOneBy({
+      card: { id: cardId },
+      id: transactionId,
+    });
+    if (!transaction) {
+      throw new NotFoundException('Transaction id not found');
+    }
+
+    if (
+      transaction.is_installment &&
+      transaction.parent_transaction_id == null
+    ) {
+      await this.transactionsRepository
+        .createQueryBuilder()
+        .delete()
+        .where('parent_transaction_id = :transactionId', { transactionId })
+        .execute();
+
+      await this.transactionsRepository.delete({ id: transactionId });
+      return;
+    }
+
+    await this.transactionsRepository.delete({ id: transactionId });
+    return;
   }
 }
