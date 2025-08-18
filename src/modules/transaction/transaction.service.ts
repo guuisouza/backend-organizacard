@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../../entities/transaction.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CardService } from '../card/card.service';
 import { CardType } from '../../shared/enums/card-type.enum';
 import {
   CreateTransactionResponse,
+  GetTransactionsByInvoiceResponse,
   InstallmentTransactionResponse,
 } from '../../shared/interfaces/transaction.interface';
 
@@ -126,5 +127,67 @@ export class TransactionService {
       date.setMonth(date.getMonth() + 1);
     }
     return date;
+  }
+
+  async getCardTransactionsByCurrentInvoice(
+    cardId: string,
+  ): Promise<GetTransactionsByInvoiceResponse> {
+    const card = await this.cardService.findCardByIdOrThrow(cardId);
+    const { card_type, invoice_closing_day } = card;
+
+    let startDate: Date;
+    let endDate: Date;
+
+    const today = new Date();
+
+    if (card_type === CardType.DEBIT) {
+      // Débito → intervalo fixo: mês atual
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    } else {
+      const afterClosing = today.getDate() > invoice_closing_day!;
+      const baseMonth = afterClosing ? today.getMonth() : today.getMonth() - 1;
+
+      startDate = new Date(
+        today.getFullYear(),
+        baseMonth,
+        invoice_closing_day! + 1,
+      );
+      endDate = new Date(
+        today.getFullYear(),
+        baseMonth + 1,
+        invoice_closing_day!,
+      );
+    }
+
+    const transactions = await this.transactionsRepository.find({
+      where: {
+        card: { id: cardId },
+        transaction_date: Between(startDate, endDate),
+      },
+      order: {
+        transaction_date: 'DESC',
+      },
+    });
+
+    if (!transactions || transactions.length === 0) {
+      return {
+        start_date: startDate,
+        end_date: endDate,
+        transactions: [],
+        total_card_balance: 0,
+      };
+    }
+
+    const totalCardBalance = transactions.reduce((acc, transaction) => {
+      return acc + transaction.amount_in_cents;
+    }, 0);
+
+    return {
+      start_date: startDate,
+      end_date: endDate,
+      transactions,
+      total_card_balance: totalCardBalance,
+    };
   }
 }

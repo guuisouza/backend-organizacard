@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -29,5 +30,13 @@ export class TransactionController {
       createTransactionDto,
       cardId,
     );
+  }
+
+  @Get('/cards/:cardId')
+  @UseGuards(JwtAuthGuard)
+  async getCardTransactionsByCurrentInvoice(
+    @Param('cardId', new ParseUUIDPipe({ version: '4' })) cardId: string,
+  ) {
+    return this.transactionService.getCardTransactionsByCurrentInvoice(cardId);
   }
 }
