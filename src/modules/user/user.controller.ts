@@ -9,7 +9,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { CreateUserDto, createUserSchema } from './dto/create-user.dto';
-import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { UserService } from './user.service';
 
 @Controller('users')

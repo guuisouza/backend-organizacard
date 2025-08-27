@@ -5,11 +5,12 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../pipes/zod-validation.pipe';
 import { CreateCardDto, createCardSchema } from './dto/create-card.dto';
 import { CurrentUserId } from '../../decorators/current-userId.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -39,7 +40,7 @@ export class CardController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async updateCard(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @CurrentUserId() userId: string,
     @Body(new ZodValidationPipe(patchCardSchema)) patchCardto: PatchCardDto,
   ) {
@@ -49,7 +50,10 @@ export class CardController {
   @Delete('delete/:id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  async deleteCard(@Param('id') id: string, @CurrentUserId() userId: string) {
+  async deleteCard(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @CurrentUserId() userId: string,
+  ) {
     return this.cardService.deleteCardById(id, userId);
   }
 }

@@ -151,4 +151,12 @@ export class CardService {
 
     await this.cardsRepository.delete({ id });
   }
+
+  async findCardByIdOrThrow(id: string): Promise<Card> {
+    const card = await this.cardsRepository.findOneBy({ id });
+    if (!card) {
+      throw new NotFoundException('Card not found');
+    }
+    return card;
+  }
 }
