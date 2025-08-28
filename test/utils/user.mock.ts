@@ -20,6 +20,19 @@ export const createdUser = {
   cards: [],
 };
 
+export const createdSafeUser = {
+  id: '20134832-ed1f-4421-8c54-6dde77236fc4',
+  name: 'ludmila',
+  email: 'ludmila@gmail.com',
+  auth_provider: AuthProvider.LOCAL,
+  is_active: false,
+  activation_token: '1f1a4b52-aafc-41ea-a865-361d87271338',
+  avatar_url: null,
+  google_id: null,
+  created_at: new Date(),
+  cards: [],
+};
+
 export const createGoogleUserDto = {
   id: '123456789',
   displayName: 'Guilherme',
