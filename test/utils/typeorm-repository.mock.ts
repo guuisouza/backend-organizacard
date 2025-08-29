@@ -10,6 +10,10 @@ export const createTypeormRepositoryMock = () => {
     create: jest.fn(),
     save: jest.fn(),
     findOneBy: jest.fn(),
+    count: jest.fn(),
+    findBy: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
     createQueryBuilder: jest.fn().mockReturnValue(queryBuilderMock),
     queryBuilderMock,
   };
