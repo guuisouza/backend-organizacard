@@ -59,22 +59,26 @@ describe('CardsService', () => {
       expect(cardsRepository.save).not.toHaveBeenCalled();
     });
 
-    it('should throw BadRequestException if due day is less than closing day', async () => {
+    it('should throw BadRequestException if due day is equal to closing day', async () => {
       const creditCardDto = {
         ...createCreditCardDto,
         invoice_due_day: 10,
-        invoice_closing_day: 15,
+        invoice_closing_day: 10,
       };
       cardsRepository.count.mockResolvedValue(4);
       await expect(
         cardService.createCard(creditCardDto, createdUser.id),
       ).rejects.toThrow(
-        new BadRequestException('Due day must be greater than closing day'),
+        new BadRequestException(
+          'Invoice due day and invoice closing day must be different',
+        ),
       );
 
       expect(cardsRepository.count).toHaveBeenCalledWith({
         where: { user: { id: createdUser.id } },
       });
+      expect(cardsRepository.create).not.toHaveBeenCalled();
+      expect(cardsRepository.save).not.toHaveBeenCalled();
     });
 
     it('should create a new debit card successfully', async () => {
