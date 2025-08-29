@@ -62,3 +62,20 @@ export const createdCreditCardResponse = {
   invoice_closing_day: 15,
   invoice_due_day: 20,
 };
+
+export const getDebitCardResponse = {
+  id: '34542342-zz1f-9921-8c54-6dde77236cd4',
+  name: 'Debit Card Visa',
+  brand: 'Visa',
+  card_type: CardType.DEBIT,
+};
+
+export const getCreditCardResponse = {
+  id: '21342342-zz1f-9921-8c54-6dde77236cd4',
+  name: 'Credit Card',
+  brand: 'Visa',
+  card_type: CardType.CREDIT,
+  credit_limit_in_cents: 10000,
+  invoice_closing_day: 15,
+  invoice_due_day: 20,
+};
