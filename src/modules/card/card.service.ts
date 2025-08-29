@@ -34,6 +34,14 @@ export class CardService {
       throw new BadRequestException("You can't create more than 5 cards");
     }
 
+    if (data.card_type === CardType.CREDIT) {
+      if (data.invoice_due_day! <= data.invoice_closing_day!) {
+        throw new BadRequestException(
+          'Due day must be greater than closing day',
+        );
+      }
+    }
+
     const createdCard = this.cardsRepository.create({
       ...data,
       user: { id: userId },
