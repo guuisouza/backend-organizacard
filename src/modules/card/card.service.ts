@@ -80,8 +80,6 @@ export class CardService {
       return [];
     }
 
-    console.log(cards);
-
     const formattedCards = cards.map((card) => {
       if (card.card_type === CardType.DEBIT) {
         return {
@@ -119,8 +117,12 @@ export class CardService {
       throw new NotFoundException('Card not found');
     }
 
-    if ('card_type' in data) {
-      throw new BadRequestException('You cannot change the card type');
+    if (
+      'card_type' in data ||
+      'invoice_closing_day' in data ||
+      'invoice_due_day' in data
+    ) {
+      throw new BadRequestException('You cannot change these fields');
     }
 
     const sanitizedData = Object.fromEntries(
@@ -132,12 +134,7 @@ export class CardService {
     }
 
     if (existingCard.card_type === CardType.DEBIT) {
-      const {
-        credit_limit_in_cents,
-        invoice_closing_day,
-        invoice_due_day,
-        ...validDebitData
-      } = data;
+      const { credit_limit_in_cents, ...validDebitData } = data;
 
       await this.cardsRepository.update({ id }, validDebitData);
       return;
