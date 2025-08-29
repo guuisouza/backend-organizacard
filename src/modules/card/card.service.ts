@@ -35,9 +35,9 @@ export class CardService {
     }
 
     if (data.card_type === CardType.CREDIT) {
-      if (data.invoice_due_day! <= data.invoice_closing_day!) {
+      if (data.invoice_due_day! === data.invoice_closing_day!) {
         throw new BadRequestException(
-          'Due day must be greater than closing day',
+          'Invoice due day and invoice closing day must be different',
         );
       }
     }
