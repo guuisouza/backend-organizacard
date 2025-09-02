@@ -1,5 +1,9 @@
 import { User } from '../../src/entities/user.entity';
 import { CardType } from '../../src/shared/enums/card-type.enum';
+import {
+  IGetCreditCardResponse,
+  IGetDebitCardResponse,
+} from '../../src/shared/interfaces/card.interface';
 
 export const createDebitCardDto = {
   name: 'Debit Card',
@@ -63,14 +67,14 @@ export const createdCreditCardResponse = {
   invoice_due_day: 20,
 };
 
-export const getDebitCardResponse = {
+export const getDebitCardResponse: IGetDebitCardResponse = {
   id: '34542342-zz1f-9921-8c54-6dde77236cd4',
   name: 'Debit Card Visa',
   brand: 'Visa',
   card_type: CardType.DEBIT,
 };
 
-export const getCreditCardResponse = {
+export const getCreditCardResponse: IGetCreditCardResponse = {
   id: '21342342-zz1f-9921-8c54-6dde77236cd4',
   name: 'Credit Card',
   brand: 'Visa',
