@@ -1,3 +1,4 @@
+import { Card } from '../../src/entities/card.entity';
 import { TransactionCategoryType } from '../../src/shared/enums/transaction-category.enum';
 
 export const createTransactionWithoutInstallmentDto = {
@@ -43,5 +44,62 @@ export const otherInstallments = [
     installment_number: 3,
     parent_transaction_id: '28669cda-3904-4675-9ba7-80feefa4cca5',
     is_installment: true,
+  },
+];
+
+export const getTransaction = {
+  ...createTransactionWithoutInstallmentDto,
+  id: '28669cda-3904-4675-9ba7-80feefa4cca5',
+  installment_number: null,
+  parent_transaction_id: null,
+  is_installment: false,
+  created_at: new Date(),
+  total_installments: null,
+  card: { id: '28669cda-3904-4675-9ba7-80feefa4cca5' } as Card,
+};
+
+export const getDebitTransactionsByInvoice = [
+  {
+    ...createTransactionWithoutInstallmentDto,
+    id: 'uuid-1-debit-transaction',
+    installment_number: null,
+    parent_transaction_id: null,
+    is_installment: false,
+    created_at: new Date(),
+    total_installments: null,
+    card: { id: '28669cda-3904-4675-9ba7-80feefa4cca5' } as Card,
+  },
+  {
+    ...createTransactionWithoutInstallmentDto,
+    id: 'uuid-2-debit-transaction',
+    installment_number: null,
+    parent_transaction_id: null,
+    is_installment: false,
+    created_at: new Date(),
+    total_installments: null,
+    card: { id: '28669cda-3904-4675-9ba7-80feefa4cca5' } as Card,
+  },
+];
+
+export const getCreditTransactionsByInvoice = [
+  {
+    ...createTransactionWithoutInstallmentDto,
+    id: 'uuid-1-credit-transaction',
+    installment_number: null,
+    parent_transaction_id: null,
+    is_installment: false,
+    created_at: new Date(),
+    total_installments: null,
+    card: { id: '28669cda-3904-4675-9ba7-80feefa4cca5' } as Card,
+  },
+  {
+    ...createTransactionWithoutInstallmentDto,
+    id: 'uuid-2-credit-transaction',
+    installment_number: null,
+    parent_transaction_id: null,
+    is_installment: false,
+    created_at: new Date(),
+    total_installments: null,
+    card: { id: '28669cda-3904-4675-9ba7-80feefa4cca5' } as Card,
   },
 ];

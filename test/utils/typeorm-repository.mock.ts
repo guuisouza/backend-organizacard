@@ -4,6 +4,8 @@ export const createTypeormRepositoryMock = () => {
     addSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getOne: jest.fn(),
+    delete: jest.fn().mockReturnThis(),
+    execute: jest.fn(),
   };
 
   return {
@@ -14,6 +16,7 @@ export const createTypeormRepositoryMock = () => {
     findBy: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    find: jest.fn(),
     createQueryBuilder: jest.fn().mockReturnValue(queryBuilderMock),
     queryBuilderMock,
   };
